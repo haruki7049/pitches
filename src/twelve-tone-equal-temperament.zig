@@ -1,7 +1,7 @@
-//! 12-tone equal temperament tuning referenced to A4.
+//! Twelve-tone equal temperament (12-TET) tuning referenced to A4.
 
 const std = @import("std");
-const Pitch = @import("./pitch.zig");
+const TwelveTonePitch = @import("./twelve-tone-pitch.zig");
 
 const Self = @This();
 
@@ -12,9 +12,9 @@ a4: f64 = 440.0,
 /// Frequency in Hz: `a4 * 2^((midi - 69) / 12)`.
 ///
 /// Each semitone multiplies the frequency by `2^(1/12)` and each octave doubles it exactly. Over
-/// the whole range of `Pitch`, from C-128 (about 4.8e-38 Hz at A4 = 440 Hz) to B127 (about
+/// the whole range of `TwelveTonePitch`, from C-128 (about 4.8e-38 Hz at A4 = 440 Hz) to B127 (about
 /// 5.3e39 Hz), the result is a normal `f64` within a few units in the last place.
-pub fn freq(self: Self, pitch: Pitch) f64 {
+pub fn freq(self: Self, pitch: TwelveTonePitch) f64 {
     // Split the distance from A4 into whole octaves and the semitones left within an octave.
     // Only the semitones go through `pow`, with an exponent in [0, 11/12], so its rounding does not
     // grow with the distance; the octaves scale the result exactly through `ldexp`.
@@ -53,9 +53,9 @@ test "freq in negative octaves against reference values" {
     // C-2 (MIDI -12): k = -81
     try std.testing.expectApproxEqRel(@as(f64, 4.0878994578218536668), et.freq(.{ .code = .c, .octave = -2 }), 1e-15);
     // C-128 (MIDI -1524): k = -1593
-    try std.testing.expectApproxEqRel(@as(f64, 4.805302719399080949897e-38), et.freq(Pitch.lowest), 1e-15);
+    try std.testing.expectApproxEqRel(@as(f64, 4.805302719399080949897e-38), et.freq(TwelveTonePitch.lowest), 1e-15);
     // B127 (MIDI 1547): k = 1478
-    try std.testing.expectApproxEqRel(@as(f64, 5.2518680854425254172e39), et.freq(Pitch.highest), 1e-15);
+    try std.testing.expectApproxEqRel(@as(f64, 5.2518680854425254172e39), et.freq(TwelveTonePitch.highest), 1e-15);
 }
 
 test "freq follows a 442 Hz reference" {
@@ -80,9 +80,9 @@ test "freq scales linearly with the reference" {
     // Every pitch at 432 Hz is 432 / 440 of the same pitch at 440 Hz.
     const et440: Self = .{};
     const et432: Self = .{ .a4 = 432.0 };
-    var n: i16 = Pitch.lowest.midi();
-    while (n <= Pitch.highest.midi()) : (n += 1) {
-        const p = try Pitch.fromMidi(n);
+    var n: i16 = TwelveTonePitch.lowest.midi();
+    while (n <= TwelveTonePitch.highest.midi()) : (n += 1) {
+        const p = try TwelveTonePitch.fromMidi(n);
         try std.testing.expectApproxEqRel(et440.freq(p) * (432.0 / 440.0), et432.freq(p), 1e-15);
     }
 }
@@ -92,10 +92,10 @@ test "adjacent semitones differ by 2^(1/12) over the whole range" {
     const ratio: f64 = 1.0594630943592952646;
     inline for (.{ 440.0, 432.0 }) |a4| {
         const et: Self = .{ .a4 = a4 };
-        var n: i16 = Pitch.lowest.midi();
-        while (n < Pitch.highest.midi()) : (n += 1) {
-            const lower = et.freq(try Pitch.fromMidi(n));
-            const upper = et.freq(try Pitch.fromMidi(n + 1));
+        var n: i16 = TwelveTonePitch.lowest.midi();
+        while (n < TwelveTonePitch.highest.midi()) : (n += 1) {
+            const lower = et.freq(try TwelveTonePitch.fromMidi(n));
+            const upper = et.freq(try TwelveTonePitch.fromMidi(n + 1));
             try std.testing.expectApproxEqRel(ratio, upper / lower, 1e-15);
         }
     }
@@ -104,10 +104,10 @@ test "adjacent semitones differ by 2^(1/12) over the whole range" {
 test "each octave doubles the frequency over the whole range" {
     inline for (.{ 440.0, 432.0 }) |a4| {
         const et: Self = .{ .a4 = a4 };
-        var n: i16 = Pitch.lowest.midi();
-        while (n + 12 <= Pitch.highest.midi()) : (n += 1) {
-            const lower = et.freq(try Pitch.fromMidi(n));
-            const upper = et.freq(try Pitch.fromMidi(n + 12));
+        var n: i16 = TwelveTonePitch.lowest.midi();
+        while (n + 12 <= TwelveTonePitch.highest.midi()) : (n += 1) {
+            const lower = et.freq(try TwelveTonePitch.fromMidi(n));
+            const upper = et.freq(try TwelveTonePitch.fromMidi(n + 12));
             try std.testing.expectEqual(@as(f64, 2.0), upper / lower);
         }
     }
@@ -116,9 +116,9 @@ test "each octave doubles the frequency over the whole range" {
 test "freq is a normal f64 and rises strictly over the whole range" {
     const et: Self = .{};
     var previous: f64 = 0.0;
-    var n: i16 = Pitch.lowest.midi();
-    while (n <= Pitch.highest.midi()) : (n += 1) {
-        const current = et.freq(try Pitch.fromMidi(n));
+    var n: i16 = TwelveTonePitch.lowest.midi();
+    while (n <= TwelveTonePitch.highest.midi()) : (n += 1) {
+        const current = et.freq(try TwelveTonePitch.fromMidi(n));
         try std.testing.expect(std.math.isNormal(current));
         try std.testing.expect(current > previous);
         previous = current;
