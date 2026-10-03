@@ -11,12 +11,13 @@ resolves it to a frequency.
 
 | Symbol | Description |
 | :--- | :--- |
-| `Pitch` | Pitch class `code` and `octave`, with `midi`, `fromMidi` and `add` (transpose by semitones) |
+| `Pitch` | Pitch class `code` and `octave` (`i8`), with `midi`, `fromMidi`, `add` (transpose by semitones), `lowest` and `highest` |
 | `Code` | Pitch class (`c`, `cs`, `d`, ... `b`; sharps only), the same type as `Pitch.Code` |
 | `EqualTemperament` | 12-tone equal temperament referenced to `a4` (defaults to 440 Hz), with `freq` |
 
-`fromMidi` and `add` return `error.PitchOutOfRange` below C0 (MIDI 12), since `octave` cannot be negative. `add`
-also returns it when the MIDI number of the result does not fit in a `usize`. MIDI numbers are not limited to 0-127.
+A `Pitch` spans C-128 to B127. Its MIDI note number (`midi`, an `i16`) extends the MIDI range 0-127 in both
+directions, from -1524 to 1547, so C-1 is 0 and negative octaves reach sub-audio frequencies. `fromMidi` and `add`
+return `error.PitchOutOfRange` outside that range.
 
 ## Usage
 

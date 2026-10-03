@@ -15,13 +15,14 @@ ______________________________________________________________________
 - **Development Environment**: Managed with Nix, `direnv`, and `nix-direnv`. Formatting across all languages is handled via `treefmt` (nixfmt, zig fmt, actionlint, mdformat, shellcheck, shfmt).
 - **Source Layout** (`src/`):
   - `root.zig`: Re-exports every public symbol.
-  - `pitch.zig`: `Pitch` (`code` and `octave`) and `Pitch.Code`, with `midi`, `fromMidi` and `add`.
+  - `pitch.zig`: `Pitch` (`code` and `octave`) and `Pitch.Code`, with `midi`, `fromMidi`, `add`, `lowest` and `highest`.
   - `equal-temperament.zig`: `EqualTemperament`, 12-tone equal temperament referenced to `a4` (`freq` returns Hz).
 - **Domain Conventions**:
   - A `Pitch` is data only. It holds no tuning: anything that depends on a choice of reference frequency or temperament belongs to a tuning type, never to `Pitch`.
   - A tuning is a value (a struct whose fields are its parameters, such as `a4`) with a `freq(self, pitch: Pitch) f64` method.
-  - `Code` uses sharps only (`cs`, `ds`, ...). The MIDI note number is `12 * (octave + 1) + code`, so C4 is 60 and A4 is 69.
-  - `octave` is a `usize`, so the lowest pitch is C0 (MIDI 12). Operations that would go below it, or past the largest MIDI number a `usize` holds, return `error.PitchOutOfRange`; never clamp silently and never overflow.
+  - `Code` uses sharps only (`cs`, `ds`, ...). The MIDI note number is `12 * (octave + 1) + code`, so C-1 is 0, C4 is 60 and A4 is 69.
+  - `octave` is an `i8`, so a `Pitch` spans C-128 to B127 and its MIDI note number (an `i16`) spans -1524 to 1547. The narrow types keep every computation from overflowing. Operations that would leave the range return `error.PitchOutOfRange`; never clamp silently.
+  - `EqualTemperament.freq` scales whole octaves exactly with `ldexp` and passes only the semitones within an octave through `pow`, so its precision does not degrade far from A4. Keep that split when changing it.
 
 ______________________________________________________________________
 
