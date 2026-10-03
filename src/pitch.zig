@@ -25,10 +25,13 @@ pub fn fromMidi(number: usize) error{PitchOutOfRange}!Self {
 }
 
 /// Transposes by `semitones` (negative goes down).
-/// Returns `error.PitchOutOfRange` when the result falls below C0.
+/// Returns `error.PitchOutOfRange` when the result falls below C0, or when its MIDI note number
+/// does not fit in a `usize`.
 pub fn add(self: Self, semitones: isize) error{PitchOutOfRange}!Self {
-    const result = @as(isize, @intCast(self.midi())) + semitones;
-    if (result < 0) return error.PitchOutOfRange;
+    // i128 holds the MIDI number of any octave and the sum with any isize, so nothing overflows.
+    const current: i128 = 12 * (@as(i128, self.octave) + 1) + @intFromEnum(self.code);
+    const result: i128 = current + semitones;
+    if (result < 0 or result > std.math.maxInt(usize)) return error.PitchOutOfRange;
     return fromMidi(@intCast(result));
 }
 
