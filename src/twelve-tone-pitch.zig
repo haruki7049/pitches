@@ -1,4 +1,4 @@
-//! 12-tone pitch: a pitch class code and an octave. Holds no tuning.
+//! Twelve-tone pitch: one of the 12 pitch classes and an octave. Holds no tuning.
 
 const std = @import("std");
 
