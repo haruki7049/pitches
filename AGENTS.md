@@ -21,7 +21,7 @@ ______________________________________________________________________
   - A `Pitch` is data only. It holds no tuning: anything that depends on a choice of reference frequency or temperament belongs to a tuning type, never to `Pitch`.
   - A tuning is a value (a struct whose fields are its parameters, such as `a4`) with a `freq(self, pitch: Pitch) f64` method.
   - `Code` uses sharps only (`cs`, `ds`, ...). The MIDI note number is `12 * (octave + 1) + code`, so C4 is 60 and A4 is 69.
-  - `octave` is a `usize`, so the lowest pitch is C0 (MIDI 12). Operations that would go below it return `error.PitchOutOfRange`; never clamp silently.
+  - `octave` is a `usize`, so the lowest pitch is C0 (MIDI 12). Operations that would go below it, or past the largest MIDI number a `usize` holds, return `error.PitchOutOfRange`; never clamp silently and never overflow.
 
 ______________________________________________________________________
 
