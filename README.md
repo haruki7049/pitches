@@ -15,7 +15,8 @@ resolves it to a frequency.
 | `Code` | Pitch class (`c`, `cs`, `d`, ... `b`; sharps only), the same type as `Pitch.Code` |
 | `EqualTemperament` | 12-tone equal temperament referenced to `a4` (defaults to 440 Hz), with `freq` |
 
-`fromMidi` and `add` return `error.PitchOutOfRange` below C0 (MIDI 12), since `octave` cannot be negative.
+`fromMidi` and `add` return `error.PitchOutOfRange` below C0 (MIDI 12), since `octave` cannot be negative. `add`
+also returns it when the MIDI number of the result does not fit in a `usize`. MIDI numbers are not limited to 0-127.
 
 ## Usage
 
