@@ -4,18 +4,18 @@ Pitch names, transposition and tuning in Zig
 
 Pure Zig with no dependencies beyond `std`. Requires Zig `0.16.0`.
 
-A `Pitch` is only a name (pitch class and octave). It holds no tuning: a tuning such as `EqualTemperament`
-resolves it to a frequency.
+A pitch is only a name (pitch class and octave). It holds no tuning: a tuning resolves it to a frequency. Every type
+names the pitch system it belongs to, so other systems (such as 19-EDO or just intonation) can be added beside the
+twelve-tone ones.
 
 ## Provided types
 
 | Symbol | Description |
 | :--- | :--- |
-| `Pitch` | Pitch class `code` and `octave` (`i8`), with `midi`, `fromMidi`, `add` (transpose by semitones), `lowest` and `highest` |
-| `Code` | Pitch class (`c`, `cs`, `d`, ... `b`; sharps only), the same type as `Pitch.Code` |
-| `EqualTemperament` | 12-tone equal temperament referenced to `a4` (defaults to 440 Hz), with `freq` |
+| `TwelveTonePitch` | Pitch class `code` (`TwelveTonePitch.Code`: `c`, `cs`, ... `b`; sharps only) and `octave` (`i8`), with `midi`, `fromMidi`, `add` (transpose by semitones), `lowest` and `highest` |
+| `TwelveToneEqualTemperament` | Twelve-tone equal temperament (12-TET) referenced to `a4` (defaults to 440 Hz), with `freq` |
 
-A `Pitch` spans C-128 to B127. Its MIDI note number (`midi`, an `i16`) extends the MIDI range 0-127 in both
+A `TwelveTonePitch` spans C-128 to B127. Its MIDI note number (`midi`, an `i16`) extends the MIDI range 0-127 in both
 directions, from -1524 to 1547, so C-1 is 0 and negative octaves reach sub-audio frequencies. `fromMidi` and `add`
 return `error.PitchOutOfRange` outside that range.
 
@@ -34,8 +34,12 @@ mod.addImport("pitches", pitches.module("pitches"));
 ```zig
 const pitches = @import("pitches");
 
-const tuning: pitches.EqualTemperament = .{}; // A4 = 440 Hz
-const c4: pitches.Pitch = .{ .code = .c, .octave = 4 };
+// Shorter local names are up to the consumer.
+const Pitch = pitches.TwelveTonePitch;
+const Tuning = pitches.TwelveToneEqualTemperament;
+
+const tuning: Tuning = .{}; // A4 = 440 Hz
+const c4: Pitch = .{ .code = .c, .octave = 4 };
 
 const hz = tuning.freq(c4); // 261.63 Hz
 const c5 = try c4.add(12); // C5

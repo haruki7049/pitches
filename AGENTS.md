@@ -10,19 +10,20 @@ ______________________________________________________________________
 
 - **Pure Zig, `std` Only**: `build.zig.zon` has no dependencies, and it must stay that way. In particular, do not depend on `phrases` (time and score structure) or `lightmix` (audio): `pitches` and `phrases` do not know each other, and a consumer connects them.
 - **Library Package**: The public module is registered as `pitches` via `b.addModule` in `build.zig`, so downstream projects consume it with `b.dependency("pitches", .{})`.
-- **Consumers**: Consumers pin `pitches` to a commit hash in their `build.zig.zon`, so a change here reaches them only when they bump that pin. Treat a change to a public type's fields, a function signature, an error set, or a numeric result (such as the frequency `EqualTemperament.freq` returns) as a breaking change, and state it in the PR description.
+- **Consumers**: Consumers pin `pitches` to a commit hash in their `build.zig.zon`, so a change here reaches them only when they bump that pin. Treat a change to a public type's fields, a function signature, an error set, or a numeric result (such as the frequency `TwelveToneEqualTemperament.freq` returns) as a breaking change, and state it in the PR description.
 - **Target Language Version**: Zig `0.16.0`, matching the toolchain pinned in `flake.nix`.
 - **Development Environment**: Managed with Nix, `direnv`, and `nix-direnv`. Formatting across all languages is handled via `treefmt` (nixfmt, zig fmt, actionlint, mdformat, shellcheck, shfmt).
 - **Source Layout** (`src/`):
   - `root.zig`: Re-exports every public symbol.
-  - `pitch.zig`: `Pitch` (`code` and `octave`) and `Pitch.Code`, with `midi`, `fromMidi`, `add`, `lowest` and `highest`.
-  - `equal-temperament.zig`: `EqualTemperament`, 12-tone equal temperament referenced to `a4` (`freq` returns Hz).
+  - `twelve-tone-pitch.zig`: `TwelveTonePitch` (`code` and `octave`) and `TwelveTonePitch.Code`, with `midi`, `fromMidi`, `add`, `lowest` and `highest`.
+  - `twelve-tone-equal-temperament.zig`: `TwelveToneEqualTemperament`, twelve-tone equal temperament referenced to `a4` (`freq` returns Hz).
 - **Domain Conventions**:
-  - A `Pitch` is data only. It holds no tuning: anything that depends on a choice of reference frequency or temperament belongs to a tuning type, never to `Pitch`.
-  - A tuning is a value (a struct whose fields are its parameters, such as `a4`) with a `freq(self, pitch: Pitch) f64` method.
-  - `Code` uses sharps only (`cs`, `ds`, ...). The MIDI note number is `12 * (octave + 1) + code`, so C-1 is 0, C4 is 60 and A4 is 69.
-  - `octave` is an `i8`, so a `Pitch` spans C-128 to B127 and its MIDI note number (an `i16`) spans -1524 to 1547. The narrow types keep every computation from overflowing. Operations that would leave the range return `error.PitchOutOfRange`; never clamp silently.
-  - `EqualTemperament.freq` scales whole octaves exactly with `ldexp` and passes only the semitones within an octave through `pow`, so its precision does not degrade far from A4. Keep that split when changing it.
+  - A pitch type is data only. It holds no tuning: anything that depends on a choice of reference frequency or temperament belongs to a tuning type, never to the pitch type.
+  - Every public name states the pitch system it belongs to (`TwelveTonePitch`, `TwelveToneEqualTemperament`). Do not export generic names such as `Pitch`, `Code` or `EqualTemperament`, even as aliases: another system (19-EDO, just intonation, ...) must be able to sit beside the twelve-tone types, and a generic name would claim it for one of them. Shorter names are for the consumer to define locally.
+  - A tuning is a value (a struct whose fields are its parameters, such as `a4`) with a `freq(self, pitch: P) f64` method, where `P` is the pitch type of its system (`TwelveTonePitch` for `TwelveToneEqualTemperament`).
+  - `TwelveTonePitch.Code` uses sharps only (`cs`, `ds`, ...). The MIDI note number is `12 * (octave + 1) + code`, so C-1 is 0, C4 is 60 and A4 is 69.
+  - `octave` is an `i8`, so a `TwelveTonePitch` spans C-128 to B127 and its MIDI note number (an `i16`) spans -1524 to 1547. The narrow types keep every computation from overflowing. Operations that would leave the range return `error.PitchOutOfRange`; never clamp silently.
+  - `TwelveToneEqualTemperament.freq` scales whole octaves exactly with `ldexp` and passes only the semitones within an octave through `pow`, so its precision does not degrade far from A4. Keep that split when changing it.
 
 ______________________________________________________________________
 
@@ -60,7 +61,7 @@ ______________________________________________________________________
 
 - **Comments**: Every public declaration has a `///` doc comment, and every file starts with a `//!` comment that says what it contains. Comments are in English.
 - **Naming**:
-  - `PascalCase` for types and for files imported as a struct (`Pitch`, `EqualTemperament`).
+  - `PascalCase` for types and for files imported as a struct (`TwelveTonePitch`, `TwelveToneEqualTemperament`).
   - `camelCase` for functions and methods (`fromMidi`, `freq`).
   - `snake_case` for variables, parameters, struct fields and enum tags (`semitones_from_a4`, `.cs`).
   - Comptime type parameters are always a single uppercase character (e.g. `T`).
