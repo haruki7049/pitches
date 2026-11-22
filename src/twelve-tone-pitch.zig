@@ -11,6 +11,7 @@ code: Code,
 octave: i8,
 
 /// Pitch class codes in ascending order, from `c` (0) to `b` (11). The `s` suffix marks a sharp.
+/// Flats are not represented: spell Db as `cs`.
 pub const Code = enum(u8) { c, cs, d, ds, e, f, fs, g, gs, a, as, b };
 
 /// The lowest pitch, C-128 (MIDI note number -1524).
