@@ -9,7 +9,7 @@ ______________________________________________________________________
 `pitches` is a minimal pitch library in Zig. It names pitches, transposes them, and resolves them to frequencies through an explicit tuning. It knows nothing about time, scores, or audio.
 
 - **Pure Zig, `std` Only**: `build.zig.zon` has no dependencies, and it must stay that way. In particular, do not depend on `phrases` (time and score structure) or `lightmix` (audio): `pitches` and `phrases` do not know each other, and a consumer connects them.
-- **Library Package**: The public module is registered as `pitches` via `b.addModule` in `build.zig`, so downstream projects consume it with `b.dependency("pitches", .{})`.
+- **Library Package**: The public module is registered as `pitches` via `b.addModule` in `build.zig`, so downstream projects consume it with `b.dependency("pitches", .{ .target = target, .optimize = optimize })`, which passes the consumer's target and optimize mode on (with `.{}`, `pitches` is compiled in Debug).
 - **Consumers**: Consumers pin `pitches` to a commit hash in their `build.zig.zon`, so a change here reaches them only when they bump that pin. Treat a change to a public type's fields, a function signature, an error set, or a numeric result (such as the frequency `TwelveToneEqualTemperament.freq` returns) as a breaking change, and state it in the PR description.
 - **Target Language Version**: Zig `0.16.0`, matching the toolchain pinned in `flake.nix`.
 - **Development Environment**: Managed with Nix, `direnv`, and `nix-direnv`. Formatting across all languages is handled via `treefmt` (nixfmt, zig fmt, actionlint, mdformat, shellcheck, shfmt).
