@@ -47,8 +47,13 @@ const c5 = try c4.add(12); // C5
 
 ## Development
 
+Run these inside the Nix development shell (`nix develop` or `direnv allow`). CI runs the same set.
+
 ```sh
+treefmt --fail-on-change
+zig build
 zig build test
+nix flake check
 ```
 
 ## License
