@@ -32,17 +32,23 @@ mod.addImport("pitches", pitches.module("pitches"));
 ```
 
 ```zig
+const std = @import("std");
 const pitches = @import("pitches");
 
 // Shorter local names are up to the consumer.
 const Pitch = pitches.TwelveTonePitch;
 const Tuning = pitches.TwelveToneEqualTemperament;
 
-const tuning: Tuning = .{}; // A4 = 440 Hz
-const c4: Pitch = .{ .code = .c, .octave = 4 };
+test "resolve and transpose a pitch" {
+    const tuning: Tuning = .{}; // A4 = 440 Hz
+    const c4: Pitch = .{ .code = .c, .octave = 4 };
 
-const hz = tuning.freq(c4); // 261.63 Hz
-const c5 = try c4.add(12); // C5
+    const hz = tuning.freq(c4); // 261.63 Hz
+    try std.testing.expectApproxEqRel(@as(f64, 261.63), hz, 1e-4);
+
+    const c5 = try c4.add(12); // C5
+    try std.testing.expectEqual(Pitch{ .code = .c, .octave = 5 }, c5);
+}
 ```
 
 ## Development
