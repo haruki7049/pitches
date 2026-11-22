@@ -15,8 +15,8 @@ twelve-tone ones.
 | `TwelveTonePitch` | Pitch class `code` (`TwelveTonePitch.Code`: `c`, `cs`, ... `b`; sharps only) and `octave` (`i8`), with `midi`, `fromMidi`, `add` (transpose by semitones), `lowest` and `highest` |
 | `TwelveToneEqualTemperament` | Twelve-tone equal temperament (12-TET) referenced to `a4` (defaults to 440 Hz), with `freq` |
 
-A `TwelveTonePitch` spans C-128 to B127. Its MIDI note number (`midi`, an `i16`) extends the MIDI range 0-127 in both
-directions, from -1524 to 1547, so C-1 is 0 and negative octaves reach sub-audio frequencies. `fromMidi` and `add`
+A `TwelveTonePitch` spans C-128 to B127. Its MIDI note number (`midi`, an `i16`) is `12 * (octave + 1) + code`, so C-1 is 0,
+C4 is 60 and A4 is 69. It extends the MIDI range 0-127 in both directions, from -1524 to 1547. `fromMidi` and `add`
 return `error.PitchOutOfRange` outside that range.
 
 ## Usage
