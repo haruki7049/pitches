@@ -75,14 +75,19 @@ test "midi counts codes in ascending semitones within an octave" {
 
 test "fromMidi at range boundaries" {
     try std.testing.expectEqual(lowest, try fromMidi(-1524));
-    // -13 = 12 * (-2 + 1) - 1, B-3
+    // -13 = 12 * (-3 + 1) + 11, B-3
     try std.testing.expectEqual(Self{ .code = .b, .octave = -3 }, try fromMidi(-13));
+    // -12 = 12 * (-2 + 1) + 0, C-2
     try std.testing.expectEqual(Self{ .code = .c, .octave = -2 }, try fromMidi(-12));
-    // -1 = 12 * (-1 + 1) - 1, B-2
+    // -1 = 12 * (-2 + 1) + 11, B-2
     try std.testing.expectEqual(Self{ .code = .b, .octave = -2 }, try fromMidi(-1));
+    // 0 = 12 * (-1 + 1) + 0, C-1
     try std.testing.expectEqual(Self{ .code = .c, .octave = -1 }, try fromMidi(0));
+    // 11 = 12 * (-1 + 1) + 11, B-1
     try std.testing.expectEqual(Self{ .code = .b, .octave = -1 }, try fromMidi(11));
+    // 12 = 12 * (0 + 1) + 0, C0
     try std.testing.expectEqual(Self{ .code = .c, .octave = 0 }, try fromMidi(12));
+    // 127 = 12 * (9 + 1) + 7, G9, the last number in the MIDI range
     try std.testing.expectEqual(Self{ .code = .g, .octave = 9 }, try fromMidi(127));
     // 128 = 12 * (9 + 1) + 8, G#9, the first number beyond the MIDI range
     try std.testing.expectEqual(Self{ .code = .gs, .octave = 9 }, try fromMidi(128));

@@ -30,7 +30,7 @@ test "freq at A4 = 440 Hz against reference values" {
     try std.testing.expectEqual(@as(f64, 440.0), et.freq(.{ .code = .a, .octave = 4 }));
     // A0 = 440 * 2^(-48/12) = 440 / 16 = 27.5 Hz, exactly
     try std.testing.expectEqual(@as(f64, 27.5), et.freq(.{ .code = .a, .octave = 0 }));
-    // The values below are 440 * 2^(k/12) computed with `bc -l`, k = midi - 69.
+    // The values below are 440 * 2^(k/12) computed with `bc -l` at `scale=60`, k = midi - 69.
     // C0: k = -57
     try std.testing.expectApproxEqRel(@as(f64, 16.351597831287414667), et.freq(.{ .code = .c, .octave = 0 }), 1e-15);
     // G3: k = -14
@@ -47,7 +47,7 @@ test "freq in negative octaves against reference values" {
     const et: Self = .{};
     // A-1 = 440 * 2^(-60/12) = 440 / 32 = 13.75 Hz, exactly
     try std.testing.expectEqual(@as(f64, 13.75), et.freq(.{ .code = .a, .octave = -1 }));
-    // The values below are 440 * 2^(k/12) computed with `bc -l`, k = midi - 69.
+    // The values below are 440 * 2^(k/12) computed with `bc -l` at `scale=60`, k = midi - 69.
     // C-1 (MIDI 0): k = -69
     try std.testing.expectApproxEqRel(@as(f64, 8.1757989156437073337), et.freq(.{ .code = .c, .octave = -1 }), 1e-15);
     // C-2 (MIDI -12): k = -81
@@ -70,9 +70,9 @@ test "freq follows a 432 Hz reference" {
     try std.testing.expectEqual(@as(f64, 432.0), et.freq(.{ .code = .a, .octave = 4 }));
     // A3 = 432 * 2^(-12/12) = 216 Hz, exactly
     try std.testing.expectEqual(@as(f64, 216.0), et.freq(.{ .code = .a, .octave = 3 }));
-    // C4 = 432 * 2^(-9/12) = 256.8687368405877504 Hz (`bc -l`)
+    // C4 = 432 * 2^(-9/12) = 256.86873684058775041 Hz (`bc -l`, `scale=60`)
     try std.testing.expectApproxEqRel(@as(f64, 256.86873684058775041), et.freq(.{ .code = .c, .octave = 4 }), 1e-15);
-    // C0 = 432 * 2^(-57/12) = 16.0542960525367344 Hz (`bc -l`)
+    // C0 = 432 * 2^(-57/12) = 16.054296052536734401 Hz (`bc -l`, `scale=60`)
     try std.testing.expectApproxEqRel(@as(f64, 16.054296052536734401), et.freq(.{ .code = .c, .octave = 0 }), 1e-15);
 }
 
