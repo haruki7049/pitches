@@ -44,13 +44,14 @@
           hasDeps = builtins.pathExists ./.deps.nix;
 
           ZIG = pkgs.zig_0_16;
+          ZLS = pkgs.zls_0_16;
           nativeBuildInputs = [
             # Compiler
             ZIG
 
             # LSP
             pkgs.nil
-            pkgs.zls
+            ZLS
 
             # zon2nix
             pkgs.zon2nix
