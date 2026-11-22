@@ -17,6 +17,7 @@ ______________________________________________________________________
   - `root.zig`: Re-exports every public symbol.
   - `twelve-tone-pitch.zig`: `TwelveTonePitch` (`code` and `octave`) and `TwelveTonePitch.Code`, with `midi`, `fromMidi`, `add`, `lowest` and `highest`.
   - `twelve-tone-equal-temperament.zig`: `TwelveToneEqualTemperament`, twelve-tone equal temperament referenced to `a4` (`freq` returns Hz).
+  - **Keep the descriptions in sync**: The public API is summarized in four places: the `README.md` "Provided types" table, the `///` comments on the re-exports in `src/root.zig`, the `//!` comment at the top of each file in `src/`, and this Source Layout list. A change to the public API updates all four.
 - **Domain Conventions**:
   - A pitch type is data only. It holds no tuning: anything that depends on a choice of reference frequency or temperament belongs to a tuning type, never to the pitch type.
   - Every public name states the pitch system it belongs to (`TwelveTonePitch`, `TwelveToneEqualTemperament`). Do not export generic names such as `Pitch`, `Code` or `EqualTemperament`, even as aliases: another system (19-EDO, just intonation, ...) must be able to sit beside the twelve-tone types, and a generic name would claim it for one of them. Shorter names are for the consumer to define locally.
