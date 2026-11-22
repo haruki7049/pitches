@@ -13,7 +13,9 @@ a4: f64 = 440.0,
 ///
 /// Each semitone multiplies the frequency by `2^(1/12)` and each octave doubles it exactly. Over
 /// the whole range of `TwelveTonePitch`, from C-128 (about 4.8e-38 Hz at A4 = 440 Hz) to B127 (about
-/// 5.3e39 Hz), the result is a normal `f64` within a few units in the last place.
+/// 5.3e39 Hz), the result is within a few units in the last place. For any `a4` from about 2.1e-268
+/// to 1.5e271 Hz, which covers every practical reference, it is also a normal `f64`; outside that
+/// range the lowest or the highest pitches become subnormal, zero or infinite.
 pub fn freq(self: Self, pitch: TwelveTonePitch) f64 {
     // Split the distance from A4 into whole octaves and the semitones left within an octave.
     // Only the semitones go through `pow`, with an exponent in [0, 11/12], so its rounding does not
