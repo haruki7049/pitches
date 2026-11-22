@@ -80,7 +80,7 @@
 
             # Zig
             programs.zig.enable = true;
-            settings.formatter.zig.command = lib.getExe ZIG;
+            programs.zig.package = ZIG;
 
             # GitHub Actions
             programs.actionlint.enable = true;
