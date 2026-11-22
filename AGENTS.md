@@ -59,14 +59,14 @@ ______________________________________________________________________
 
 ## 4. Coding Conventions
 
-- **Comments**: Every public declaration has a `///` doc comment, and every file starts with a `//!` comment that says what it contains. Comments are in English.
+- **Comments**: Every public declaration in `src/` has a `///` doc comment, and every file in `src/` starts with a `//!` comment that says what it contains. `build.zig` is the build script, not part of the public module, so these rules do not cover it. Comments are in English.
 - **Naming**:
   - `PascalCase` for types and for files imported as a struct (`TwelveTonePitch`, `TwelveToneEqualTemperament`).
   - `camelCase` for functions and methods (`fromMidi`, `freq`).
   - `snake_case` for variables, parameters, struct fields and enum tags (`semitones_from_a4`, `.cs`).
   - Comptime type parameters are always a single uppercase character (e.g. `T`).
   - Error tags are `PascalCase` (`error.PitchOutOfRange`).
-- **Tests**: Keep tests next to the code they cover, in the same file. Every file ends with `test { std.testing.refAllDecls(@This()); }`. A test that checks a numeric result states the expected value and how it was derived in a comment (e.g. `// C7 = 440 * 2^(27/12) = 2093.005 Hz`).
+- **Tests**: Keep tests next to the code they cover, in the same file. Every file in `src/` ends with `test { std.testing.refAllDecls(@This()); }`. A test that checks a numeric result states the expected value and how it was derived in a comment (e.g. `// C7 = 440 * 2^(27/12) = 2093.005 Hz`).
 - **Validation**: Reject invalid input with an error instead of reaching undefined or panicking behavior, and never clamp silently (e.g. `add` returns `error.PitchOutOfRange`).
 
 ______________________________________________________________________
