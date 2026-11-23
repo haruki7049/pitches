@@ -34,7 +34,7 @@ test "freq at A4 = 440 Hz against reference values" {
     // C0: k = -57
     try std.testing.expectApproxEqRel(@as(f64, 16.351597831287414667), et.freq(.{ .code = .c, .octave = 0 }), 1e-15);
     // G3: k = -14
-    try std.testing.expectApproxEqRel(@as(f64, 195.99771799087463), et.freq(.{ .code = .g, .octave = 3 }), 1e-15);
+    try std.testing.expectApproxEqRel(@as(f64, 195.99771799087464704), et.freq(.{ .code = .g, .octave = 3 }), 1e-15);
     // C4: k = -9
     try std.testing.expectApproxEqRel(@as(f64, 261.62556530059863467), et.freq(.{ .code = .c, .octave = 4 }), 1e-15);
     // C8: k = 39
